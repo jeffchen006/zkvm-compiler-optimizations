@@ -8,10 +8,10 @@
 /*############################################################################*/
 
 #if !defined(LARGE_WORKLOAD)
-#define SIZE   (100)
+#define SIZE   (10)
 #define SIZE_X (1*SIZE)
 #define SIZE_Y (1*SIZE)
-#define SIZE_Z (130)
+#define SIZE_Z (13)
 #else
 #define SIZE   (100)
 #define SIZE_X (2*SIZE)
