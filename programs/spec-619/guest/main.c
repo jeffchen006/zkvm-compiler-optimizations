@@ -114,13 +114,10 @@ void MAIN_printInfo( const MAIN_Param* param ) {
 	        "\tnTimeSteps     : %i\n"
 	        "\tresult file    : %s\n"
 	        "\taction         : %s\n"
-	        "\tsimulation type: %s\n"
-	        "\tobstacle file  : %s\n\n",
+	        "\tsimulation type: %s\n",
 	        SIZE_X, SIZE_Y, SIZE_Z, 1e-6*SIZE_X*SIZE_Y*SIZE_Z,
 	        param->nTimeSteps, param->resultFilename, 
-	        actionString[param->action], simTypeString[param->simType],
-	        (param->obstacleFilename == NULL) ? "<none>" :
-	                                            param->obstacleFilename );
+	        actionString[param->action], simTypeString[param->simType] );
 }
 
 /*############################################################################*/
