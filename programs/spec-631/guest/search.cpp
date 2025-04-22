@@ -1501,7 +1501,7 @@ move_s search_root(state_t *s, int originalalpha, int originalbeta, int depth) {
 
         if (uci_mode && gamestate.i_depth > 4 && (rdifftime(rtime(), gamestate.start_time) >= 150)
             && uci_showrefutations) {
-            myprintf("info refutation %s ", searching_move);
+            printf("info refutation %s ", searching_move);
             extract_current_bestline(s);
         }
 
@@ -1606,9 +1606,9 @@ void reset_search_counters(state_t *s) {
 
 void reset_search_data(state_t *s) {
     /* clear the history heuristic: */
-    memset(history_h, 0, sizeof(history_h));
-    memset(history_hit, 0, sizeof(history_hit));
-    memset(history_tot, 0, sizeof(history_tot));
+    rmemset(history_h, 0, sizeof(history_h));
+    rmemset(history_hit, 0, sizeof(history_hit));
+    rmemset(history_tot, 0, sizeof(history_tot));
 
     /* clear the killer moves: */
     for (int i = 0; i < PV_BUFF; i++) {
@@ -1681,8 +1681,8 @@ move_s think(gamestate_t *g, state_t *s) {
         if (legals == 1) {
             if (uci_mode) {
                 comp_to_coord(s, moves[lastlegal], output);
-                myprintf("info depth 1 time 0 nodes 1 score cp %d\n", lastsearchscore);
-                myprintf("bestmove %s\n",output);
+                printf("info depth 1 time 0 nodes 1 score cp %d\n", lastsearchscore);
+                printf("bestmove %s\n",output);
             }
             return moves[lastlegal];
         }
@@ -1693,13 +1693,13 @@ move_s think(gamestate_t *g, state_t *s) {
     if (!uci_mode) {
         switch (gamestate.phase) {
             case OPENING:
-                myprintf("Opening phase.\n");
+                printf("Opening phase.\n");
                 break;
             case MIDDLEGAME:
-                myprintf("Middlegame phase.\n");
+                printf("Middlegame phase.\n");
                 break;
             case ENDGAME:
-                myprintf("Endgame phase.\n");
+                printf("Endgame phase.\n");
                 break;
         }
     }
@@ -1717,10 +1717,10 @@ move_s think(gamestate_t *g, state_t *s) {
 
 #if !defined COPYPROTECTION
     if (!uci_mode) {
-        myprintf("Time for move : %d\n", gamestate.time_for_move);
+        printf("Time for move : %d\n", gamestate.time_for_move);
     } else {
         if (gamestate.time_for_move != 99999999) {
-            myprintf("info string Time for move: %ds, early break: %ds\n",
+            printf("info string Time for move: %ds, early break: %ds\n",
                      gamestate.time_for_move / 100,
                      (int)((gamestate.time_for_move * 1.0 / 2.5) / 100));
         }
@@ -1834,9 +1834,9 @@ move_s think(gamestate_t *g, state_t *s) {
         if (!gamestate.time_failure
             && !gamestate.failed
             && temp_move == 0) {
-            myprintf("info string Nonsense in temp_move, time_failure %d failed %d time_exit %d result %d\n",
+            printf("info string Nonsense in temp_move, time_failure %d failed %d time_exit %d result %d\n",
                       gamestate.time_failure, gamestate.failed, gamestate.time_exit, gamestate.result);
-            myprintf("bestmove 0000\n");
+            printf("bestmove 0000\n");
             return 0;
         }
 
@@ -1877,7 +1877,7 @@ move_s think(gamestate_t *g, state_t *s) {
     }
 
     if (comp_move == 0) {
-        myprintf("bestmove 0000\n");
+        printf("bestmove 0000\n");
         return 0;
     }
 
@@ -1895,9 +1895,9 @@ move_s think(gamestate_t *g, state_t *s) {
 
         if (pondermove != 0) {
             comp_to_coord(s, pondermove, output2);
-            myprintf("bestmove %s ponder %s\n", output, output2);
+            printf("bestmove %s ponder %s\n", output, output2);
         } else {
-            myprintf("bestmove %s\n", output);
+            printf("bestmove %s\n", output);
         }
     }
 

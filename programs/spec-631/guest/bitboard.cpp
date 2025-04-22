@@ -114,51 +114,51 @@ void PrintBitboard(const BITBOARD B) {
     
     for (sq = 0; sq < 64; sq++) {
         if (B &( b << sq)) 
-            myprintf("X");
+            printf("X");
         else 
-            myprintf(".");
+            printf(".");
         
         if (sq % 8 == 7) 
-            myprintf("\n");
+            printf("\n");
     }
     
-    myprintf("\n");
+    printf("\n");
 }
 
 void PrintRotBitboards(state_t *s) {
-    myprintf("All\n");
+    printf("All\n");
     PrintBitboard(s->All);   
 }
 
 void PrintAllBitboards(state_t *s) {
-    myprintf("WhitePieces\n");
+    printf("WhitePieces\n");
     PrintBitboard(s->WhitePieces);
-    myprintf("BlackPieces\n");
+    printf("BlackPieces\n");
     PrintBitboard(s->BlackPieces);
-    myprintf("All\n");
+    printf("All\n");
     PrintBitboard(s->All);
     
     BITBOARD *BitBoard = s->BitBoard;
 
-    myprintf("Whitepawns\n");
+    printf("Whitepawns\n");
     PrintBitboard(WhitePawns);
-    myprintf("Blackpawns\n");
+    printf("Blackpawns\n");
     PrintBitboard(BlackPawns);
-    myprintf("WhiteKnights\n");
+    printf("WhiteKnights\n");
     PrintBitboard(WhiteKnights);
-    myprintf("BlackKnights\n");
+    printf("BlackKnights\n");
     PrintBitboard(BlackKnights);
-    myprintf("WhiteBishops\n");
+    printf("WhiteBishops\n");
     PrintBitboard(WhiteBishops);
-    myprintf("BlackBishops\n");
+    printf("BlackBishops\n");
     PrintBitboard(BlackBishops);
-    myprintf("WhiteRooks\n");
+    printf("WhiteRooks\n");
     PrintBitboard(WhiteRooks);
-    myprintf("BlackRooks\n");
+    printf("BlackRooks\n");
     PrintBitboard(BlackRooks);
-    myprintf("WhiteQueens\n");
+    printf("WhiteQueens\n");
     PrintBitboard(WhiteQueens);
-    myprintf("BlackQueens\n");
+    printf("BlackQueens\n");
     PrintBitboard(BlackQueens);
 }
 

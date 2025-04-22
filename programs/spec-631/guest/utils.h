@@ -30,7 +30,7 @@ void dumpsearchstat(state_t *s);
 void display_board(state_t *s, int color);
 void myprintf(const char *fmt, ...);
 void comp_to_san(state_t *s, move_s move, char *str);
-void rinput(char *str, int n, FILE *stream);
+// void rinput(char *str, int n, FILE *stream);
 int interrupt(void);
 int allocate_time(gamestate_t *g, int alloc);
 int rtime(void);

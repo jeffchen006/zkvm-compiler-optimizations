@@ -41,9 +41,9 @@ int global_id;
 int EGTBHits;
 int EGTBProbes;
 
-int main(int argc, char *argv[]) {
-    setbuf(stdout, NULL);
-    setbuf(stdin, NULL);
+extern "C" void cmain() {
+    // setbuf(stdout, NULL);
+    // setbuf(stdin, NULL);
     
     start_up();
 
@@ -84,22 +84,22 @@ int main(int argc, char *argv[]) {
     time_check_log = 14;    // 16384
 
     gamestate.move_number = 0;
-    memset(gamestate.game_history, 0, sizeof(gamestate.game_history));
-    memset(gamestate.game_history_x, 0, sizeof(gamestate.game_history_x));
+    rmemset(gamestate.game_history, 0, sizeof(gamestate.game_history));
+    rmemset(gamestate.game_history_x, 0, sizeof(gamestate.game_history_x));
 
     state.hash_history[gamestate.move_number] = state.hash;
 
-    memset(&buffered_command[0], 0, sizeof(buffered_command));
+    rmemset(&buffered_command[0], 0, sizeof(buffered_command));
     buffered_count = 0;
     
     /* SPEC version: take EPD testset from commandline */
-    if (argc == 2) {
-        run_epd_testsuite(&gamestate, &state, argv[1]);    
-    } else {
-        myprintf("Please specify the workfile.\n");
-        return EXIT_FAILURE;
-    }
+    // if (argc == 2) {
+        run_epd_testsuite(&gamestate, &state, "none");    
+    // } else {
+        // printf("Please specify the workfile.\n");
+        // return EXIT_FAILURE;
+    // }
 
-    return EXIT_SUCCESS;
+    // return EXIT_SUCCESS;
 }
 

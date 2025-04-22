@@ -20,7 +20,7 @@ ttentry_t *TTable;
 unsigned int TTAge; 
 
 void clear_tt(void) {
-    memset(TTable, 0, sizeof(ttentry_t) * TTSize);    
+    rmemset(TTable, 0, sizeof(ttentry_t) * TTSize);    
 }
 
 void clear_dp_tt(void) {
@@ -257,12 +257,12 @@ void alloc_hash(void) {
     TTable = (ttentry_t *)malloc(sizeof(ttentry_t) * (size_t)TTSize);
 
     if (TTable == NULL) {
-        myprintf("Out of memory allocating hashtables.\n");
+        printf("Out of memory allocating hashtables.\n");
 
         exit(EXIT_FAILURE);
     }
 
-    myprintf("Allocated %d hash entries, totalling %llu bytes.\n", TTSize,
+    printf("Allocated %d hash entries, totalling %llu bytes.\n", TTSize,
              (sizeof(ttentry_t) * (BITBOARD)TTSize));
 
     return;

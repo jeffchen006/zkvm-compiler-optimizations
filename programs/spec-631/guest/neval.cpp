@@ -1045,7 +1045,7 @@ void feval(state_t *s, int phase_scale, t_eval_comps *ec) {
     attackinfo_t attack_info;    
     int score = 0;            
       
-    memset(&attack_info, 0, sizeof(attackinfo_t));  
+    rmemset(&attack_info, 0, sizeof(attackinfo_t));  
 
     /*
         mobility eval
@@ -1145,7 +1145,7 @@ int eval(state_t *s, const int alpha, const int beta, const int forcefull) {
 
     score = 0;
     
-    memset(&ec, 0, sizeof(t_eval_comps));
+    rmemset(&ec, 0, sizeof(t_eval_comps));
     feval(s, phase_scale, &ec);                
     
     score += !!s->white_to_move *  10;

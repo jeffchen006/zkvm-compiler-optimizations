@@ -188,7 +188,7 @@ void init_psq_score(state_t *s) {
 void preprocess_prepare(void) {
     int p, s, score;
     
-    memset(psq_table, 0, sizeof(psq_table));
+    rmemset(psq_table, 0, sizeof(psq_table));
     
     for (p = 1; p <= 12; p++) {
         for (s = 0; s < 64; s++) {

@@ -11,12 +11,13 @@
 
 #include "config.h"
 
-#include <assert.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
+#include <zkvm.h>
+// #include <assert.h>
+// #include <signal.h>
+// #include <stdlib.h>
+// #include <stdio.h>
+// #include <string.h>
+// #include <ctype.h>
 
 #if defined(WIN32) || defined(WIN64) || defined(SPEC_WINDOWS)
 #define NOMINMAX  /* prevent defines clash */

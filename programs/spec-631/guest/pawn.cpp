@@ -33,7 +33,7 @@ static pawntt_t PawnTT[MAX_CPU][1 << PAWN_HASH_LOG];
     reset pawn evaluation hash table
 */
 void clear_pawn_tt(void) {
-    memset(PawnTT, 0, sizeof(PawnTT));
+    rmemset(PawnTT, 0, sizeof(PawnTT));
 }
 
 /*
@@ -73,7 +73,7 @@ static void full_pawn_eval(state_t *s, pawntt_t *const pawntt) {
     /*
         initialize
     */
-    memset(pawntt, 0, sizeof(pawntt_t));
+    rmemset(pawntt, 0, sizeof(pawntt_t));
    
     /*
         File openness loop
@@ -293,32 +293,32 @@ static void full_pawn_eval(state_t *s, pawntt_t *const pawntt) {
         }
 
 #ifdef PAWN_EVAL_DEBUG
-        myprintf("Pawn %s: ",sq_name[it]);
+        printf("Pawn %s: ",sq_name[it]);
         if (doubled) {
-            myprintf("doubled ");
+            printf("doubled ");
         }
 
         if (trailer) {
-            myprintf("trailer ");
+            printf("trailer ");
         }
 
         if (isolated) {
-            myprintf("isolated ");
+            printf("isolated ");
         }
 
         if (backward) {
-            myprintf("backward ");
+            printf("backward ");
         }
 
         if (candidate) {
-            myprintf("candidate (%d) ",scale(7 - Rank(it), PAWN_CANDIDATE_MIN, PAWN_CANDIDATE_MAX));
+            printf("candidate (%d) ",scale(7 - Rank(it), PAWN_CANDIDATE_MIN, PAWN_CANDIDATE_MAX));
         }
 
         if (openfile) {
-            myprintf("on open file ");
+            printf("on open file ");
         }
 
-        myprintf("\n");
+        printf("\n");
 #endif
 
         if (Rank(it) >= Rank6) {
@@ -353,12 +353,12 @@ static void full_pawn_eval(state_t *s, pawntt_t *const pawntt) {
                     if (!(side_mask & AboveMask[Rank(newsq)] & BlackPawns))
                     {
 #ifdef PAWN_EVAL_DEBUG
-                        myprintf("WStrong square %s\n",sq_name[newsq]);
+                        printf("WStrong square %s\n",sq_name[newsq]);
 #endif
                         if (pawntt->w_strong_square & Mask[newsq])
                         {
 #ifdef PAWN_EVAL_DEBUG
-                            myprintf("WSuperStrong square %s\n",sq_name[newsq]);
+                            printf("WSuperStrong square %s\n",sq_name[newsq]);
 #endif
                             pawntt->w_super_strong_square |= Mask[newsq];
                         } else {
@@ -393,12 +393,12 @@ static void full_pawn_eval(state_t *s, pawntt_t *const pawntt) {
                     if (!(side_mask & AboveMask[Rank(newsq)] & BlackPawns))
                     {
 #ifdef PAWN_EVAL_DEBUG
-                        myprintf("WStrong square %s\n",sq_name[newsq]);
+                        printf("WStrong square %s\n",sq_name[newsq]);
 #endif
                         if (pawntt->w_strong_square & Mask[newsq])
                         {
 #ifdef PAWN_EVAL_DEBUG
-                            myprintf("WSuperStrong square %s\n",sq_name[newsq]);
+                            printf("WSuperStrong square %s\n",sq_name[newsq]);
 #endif
                             pawntt->w_super_strong_square |= Mask[newsq];
                         } else {
@@ -609,32 +609,32 @@ static void full_pawn_eval(state_t *s, pawntt_t *const pawntt) {
         }
 
 #ifdef PAWN_EVAL_DEBUG
-        myprintf("Pawn %s: ",sq_name[it]);
+        printf("Pawn %s: ",sq_name[it]);
         if (doubled) {
-            myprintf("doubled ");
+            printf("doubled ");
         }
 
         if (trailer) {
-            myprintf("trailer ");
+            printf("trailer ");
         }
 
         if (isolated) {
-            myprintf("isolated ");
+            printf("isolated ");
         }
 
         if (backward) {
-            myprintf("backward ");
+            printf("backward ");
         }
 
         if (candidate) {
-            myprintf("candidate (%d) ",scale(Rank(it), PAWN_CANDIDATE_MIN, PAWN_CANDIDATE_MAX));
+            printf("candidate (%d) ",scale(Rank(it), PAWN_CANDIDATE_MIN, PAWN_CANDIDATE_MAX));
         }
 
         if (openfile) {
-            myprintf("on open file ");
+            printf("on open file ");
         }
 
-        myprintf("\n");
+        printf("\n");
 #endif
 
         if (Rank(it) <= Rank3) {
@@ -671,12 +671,12 @@ static void full_pawn_eval(state_t *s, pawntt_t *const pawntt) {
                     if (!(side_mask & BelowMask[Rank(newsq)] & WhitePawns))
                     {
 #ifdef PAWN_EVAL_DEBUG
-                        myprintf("BStrong square %s\n",sq_name[newsq]);
+                        printf("BStrong square %s\n",sq_name[newsq]);
 #endif
                         if (pawntt->b_strong_square & Mask[newsq])
                         {
 #ifdef PAWN_EVAL_DEBUG
-                            myprintf("BSuperStrong square %s\n",sq_name[newsq]);
+                            printf("BSuperStrong square %s\n",sq_name[newsq]);
 #endif
                             pawntt->b_super_strong_square |= Mask[newsq];
                         } else {
@@ -713,12 +713,12 @@ static void full_pawn_eval(state_t *s, pawntt_t *const pawntt) {
                     if (!(side_mask & BelowMask[Rank(newsq)] & WhitePawns))
                     {
 #ifdef PAWN_EVAL_DEBUG
-                        myprintf("BStrong square %s\n",sq_name[newsq]);
+                        printf("BStrong square %s\n",sq_name[newsq]);
 #endif
                         if (pawntt->b_strong_square & Mask[newsq])
                         {
 #ifdef PAWN_EVAL_DEBUG
-                            myprintf("BSuperStrong square %s\n",sq_name[newsq]);
+                            printf("BSuperStrong square %s\n",sq_name[newsq]);
 #endif
                             pawntt->b_super_strong_square |= Mask[newsq];
                         } else {

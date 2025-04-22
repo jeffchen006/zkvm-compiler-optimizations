@@ -21,9 +21,10 @@
 #include "attacks.h"
 #include "utils.h"
 #include "squares.h"
+#include <zkvm.h>
 
-#include <stdarg.h>
-#include <limits.h>
+// #include <stdarg.h>
+// #include <limits.h>
 
 static unsigned int s1, s2, s3;
 
@@ -368,31 +369,31 @@ void display_board(state_t *s, int color) {
     int *sboard = s->sboard;
 
     if (color % 2) {
-        myprintf("  %s\n",line_sep);
+        printf("  %s\n",line_sep);
         for (a = 0; a < 8; a++) {
-            myprintf("%d |", 8 - a);
+            printf("%d |", 8 - a);
             for (b = 0; b < 8; b++) {
                 c = a * 8 + b;                
-                myprintf(" %s |", piece_rep[sboard[c]]);                
+                printf(" %s |", piece_rep[sboard[c]]);                
             }
 
-            myprintf("\n  %s\n",line_sep);
+            printf("\n  %s\n",line_sep);
         }
 
-        myprintf("\n     a    b    c    d    e    f    g    h\n\n");
+        printf("\n     a    b    c    d    e    f    g    h\n\n");
     } else {
-        myprintf("  %s\n",line_sep);
+        printf("  %s\n",line_sep);
         for (a = 7; a >= 0; a--) {
-            myprintf("%d |", a+1);
+            printf("%d |", a+1);
             for (b = 7; b >= 0; b--) {
                 c = a * 8 + b;                
-                myprintf(" %s |", piece_rep[sboard[c]]);                
+                printf(" %s |", piece_rep[sboard[c]]);                
             }
 
-            myprintf("\n  %s\n",line_sep);
+            printf("\n  %s\n",line_sep);
         }
 
-        myprintf("\n     h    g    f    e    d    c    b    a\n\n");
+        printf("\n     h    g    f    e    d    c    b    a\n\n");
     }
 }
 
@@ -409,7 +410,7 @@ void init_game(gamestate_t *g, state_t *s) {
         wrook, wknight, wbishop, wqueen, wking, wbishop, wknight, wrook,                         
     };
 
-    memcpy(s->sboard, init_board, sizeof(init_board));
+    rmemcpy(s->sboard, init_board, sizeof(init_board));
 
     s->white_to_move = 1;
     s->ep_square = 0;
@@ -465,7 +466,7 @@ void extract_current_path(state_t *s) {
     }
     strcat(str, "\n");
 
-    myprintf(str);
+    printf(str);
 }
 
 static void hash_extract_pv(state_t *s, int level, char *str) {
@@ -565,7 +566,7 @@ void extract_current_bestline(state_t *s) {
     hash_extract_pv(s, 60, output);
     strcat(output, "\n");
     
-    myprintf(output);
+    printf(output);
 }
 
 void stringize_pv(state_t *s, char *str) {
@@ -590,19 +591,19 @@ void post_thinking(state_t *s, int score, move_s pv, char *searching_move, int m
     elapsed = rdifftime(rtime(), gamestate.start_time);
     
     if (!uci_mode) {
-        myprintf("%2d %7d %5d %8llu  ",gamestate.i_depth,score,elapsed,s->nodes);
+        printf("%2d %7d %5d %8llu  ",gamestate.i_depth,score,elapsed,s->nodes);
     } else {
-        myprintf("info currmove %s currmovenumber %d\n",searching_move,mc);
+        printf("info currmove %s currmovenumber %d\n",searching_move,mc);
         
         if (abs(score) < 10000) {
-            myprintf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d multipv 1 pv ",
+            printf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d multipv 1 pv ",
                  gamestate.i_depth,s->maxply,elapsed * 10,s->nodes, EGTBHits, score);
         } else {
             if (score < 0) {
                 score = -score;
                 sign = -sign;
             }
-            myprintf("info depth %d seldepth %d time %d nodes %llu tbhits %d score mate %d multipv 1 pv ",
+            printf("info depth %d seldepth %d time %d nodes %llu tbhits %d score mate %d multipv 1 pv ",
                  gamestate.i_depth,s->maxply,elapsed * 10,s->nodes, EGTBHits, sign * (int)((MATE - score) / 2));
         }
     }
@@ -615,7 +616,7 @@ void post_thinking(state_t *s, int score, move_s pv, char *searching_move, int m
         remake = 1;
     } 
 
-    memset(hashpv, 0, sizeof(hashpv));
+    rmemset(hashpv, 0, sizeof(hashpv));
     char movestr[STR_BUFF];
     if (!uci_mode) {
         comp_to_san(s, pv, movestr);
@@ -628,7 +629,7 @@ void post_thinking(state_t *s, int score, move_s pv, char *searching_move, int m
     make(s, pv);
     
     hash_extract_pv(s, 60, hashpv);
-    myprintf("%s", hashpv);  
+    printf("%s", hashpv);  
 
     unmake(s, pv);
 
@@ -636,7 +637,7 @@ void post_thinking(state_t *s, int score, move_s pv, char *searching_move, int m
         make(s, pv);
     }
 
-    myprintf("\n");
+    printf("\n");
 }
 
 void post_fh_thinking(state_t *s, int score, move_s failmove, char *searching_move, int mc) {
@@ -652,17 +653,17 @@ void post_fh_thinking(state_t *s, int score, move_s failmove, char *searching_mo
 
     elapsed = rdifftime(rtime(),gamestate.start_time);
     if (!uci_mode) {
-        myprintf("%2d %7d %5d %8llu  ",gamestate.i_depth,score,elapsed,s->nodes);
+        printf("%2d %7d %5d %8llu  ",gamestate.i_depth,score,elapsed,s->nodes);
     } else {
         if (abs(score) < 10000) {
-            myprintf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d lowerbound multipv 1 pv ",
+            printf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d lowerbound multipv 1 pv ",
                  gamestate.i_depth,s->maxply,elapsed * 10,s->nodes,EGTBHits,score);
         } else {
             if (score < 0) {
                 score = -score;
                 sign = -sign;
             }
-            myprintf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d lowerbound multipv 1 pv ",
+            printf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d lowerbound multipv 1 pv ",
                  gamestate.i_depth,s->maxply,elapsed * 10,s->nodes,EGTBHits,sign * (int)((MATE - score) / 2));
         }
     }
@@ -676,14 +677,14 @@ void post_fh_thinking(state_t *s, int score, move_s failmove, char *searching_mo
 
     make(s, failmove);
     if (!uci_mode) {
-        myprintf("%s !!",output);
+        printf("%s !!",output);
     } else {
-        myprintf("%s", output);
-        myprintf("\n");
-        myprintf("info currmove %s currmovenumber %d",output,mc);
+        printf("%s", output);
+        printf("\n");
+        printf("info currmove %s currmovenumber %d",output,mc);
     }
 
-    myprintf("\n");
+    printf("\n");
 }
 
 void post_fl_thinking(state_t *s, int score, move_s failmove, char *searching_move, int mc) {
@@ -702,19 +703,19 @@ void post_fl_thinking(state_t *s, int score, move_s failmove, char *searching_mo
     elapsed = rdifftime(rtime(), gamestate.start_time);
 if (!uci_mode)
     {
-        myprintf("%2d %7d %5d %8llu  ",gamestate.i_depth,score,elapsed,s->nodes);
+        printf("%2d %7d %5d %8llu  ",gamestate.i_depth,score,elapsed,s->nodes);
     } else {
-        myprintf("info currmove %s currmovenumber %d\n",searching_move,mc);
+        printf("info currmove %s currmovenumber %d\n",searching_move,mc);
         if (abs(score) < 10000)
         {
-            myprintf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d upperbound multipv 1 pv ",
+            printf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d upperbound multipv 1 pv ",
                  gamestate.i_depth,s->maxply,elapsed * 10,s->nodes,EGTBHits,score);
         } else {
             if (score < 0) {
                 score = -score;
                 sign = -sign;
             }
-            myprintf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d upperbound multipv 1 pv ",
+            printf("info depth %d seldepth %d time %d nodes %llu tbhits %d score cp %d upperbound multipv 1 pv ",
                  gamestate.i_depth,s->maxply,elapsed * 10,s->nodes,EGTBHits,sign * (int)((MATE - score) / 2));
 
         }
@@ -730,12 +731,12 @@ if (!uci_mode)
     make(s, failmove);
     
     if (!uci_mode) {
-        myprintf("%s ??", output);
+        printf("%s ??", output);
     } else {
-        myprintf("%s", output);
+        printf("%s", output);
     }
     
-    myprintf("\n");
+    printf("\n");
 }
 
 
@@ -769,7 +770,7 @@ void post_multipv_thinking(state_t *s, int score, int mc, move_s move) {
         return;
     }    
     
-    memset(multipv_strings[mc], 0, STR_BUFF);
+    rmemset(multipv_strings[mc], 0, STR_BUFF);
 
     multipv_scores[mc] = score;
 
@@ -794,7 +795,7 @@ void post_multipv_thinking(state_t *s, int score, int mc, move_s move) {
     strcat(multipv_strings[mc], output);
     strcat(multipv_strings[mc], " ");
 
-    memset(hashpv, 0, sizeof(hashpv));
+    rmemset(hashpv, 0, sizeof(hashpv));
 
     hash_extract_pv(s, 60, hashpv);
 
@@ -807,7 +808,7 @@ void post_multipv_thinking(state_t *s, int score, int mc, move_s move) {
         for (i = 1; i <= uci_multipv; i++) {
             sprintf(hashpv, "info multipv %d ",i);
             strcat(hashpv, multipv_strings[i]);
-            myprintf(hashpv);
+            printf(hashpv);
         }
     }
 
@@ -821,7 +822,7 @@ void reset_piece_square(state_t *s) {
     int i;
 
     s->Material = 0;    
-    memset(s->npieces, 0, sizeof(s->npieces));
+    rmemset(s->npieces, 0, sizeof(s->npieces));
 
     for (i = 0; i < 64; i++) {
         if (s->sboard[i] && (s->sboard[i] < npiece)) {
@@ -863,78 +864,78 @@ void reset_piece_square(state_t *s) {
     init_psq_score(s);
 }
 
-void myprintf(const char *fmt, ...) {
-    va_list ap;
-    FILE *log;        
+// void myprintf(const char *fmt, ...) {
+//     va_list ap;
+//     FILE *log;        
     
-    va_start(ap,fmt);
+//     va_start(ap,fmt);
     
-    vprintf(fmt,ap);
+//     vprintf(fmt,ap);
 
-    if (cfg_logging) {
-        log = fopen(cfg_logfile,"a");
+//     if (cfg_logging) {
+//         log = fopen(cfg_logfile,"a");
 
-        if (log) {
-            vfprintf(log,fmt,ap);
-            fclose(log);
-        }
-    }           
+//         if (log) {
+//             vfprintf(log,fmt,ap);
+//             fclose(log);
+//         }
+//     }           
 
-    va_end(ap);
-}
+//     va_end(ap);
+// }
 
-void rinput(char str[], int n, FILE *stream) {
-    FILE *log;
+// void rinput(char str[], int n, FILE *stream) {
+//     FILE *log;
 
-    /* 
-        My input function - reads in up to n-1 characters from stream, or
-        until we encounter a \n or an EOF.  Appends a null character at the end of        
-        the string, and stores the string in str[] 
-    */
-    int ch, i = 0, j;
+//     /* 
+//         My input function - reads in up to n-1 characters from stream, or
+//         until we encounter a \n or an EOF.  Appends a null character at the end of        
+//         the string, and stores the string in str[] 
+//     */
+//     int ch, i = 0, j;
 
-    if (buffered_count && !is_pondering) {
-        strncpy(str, buffered_command[0], n);
+//     if (buffered_count && !is_pondering) {
+//         strncpy(str, buffered_command[0], n);
 
-        j = buffered_count - 1;
+//         j = buffered_count - 1;
 
-        while (j) {
-            strncpy(buffered_command[i], buffered_command[i + 1], BIG_BUFF);
-            j--;
-            i++;
-        }
+//         while (j) {
+//             strncpy(buffered_command[i], buffered_command[i + 1], BIG_BUFF);
+//             j--;
+//             i++;
+//         }
 
-        buffered_count--;
-        memset(buffered_command[buffered_count], 0, sizeof(buffered_command[buffered_count]));
+//         buffered_count--;
+//         rmemset(buffered_command[buffered_count], 0, sizeof(buffered_command[buffered_count]));
 
-        return;
-    }
+//         return;
+//     }
 
-    i = 0;
+//     i = 0;
 
-    while ((ch = getc(stream)) != (int)'\n' && ch != EOF) {
-        if (i < n - 1) {
-            str[i++] = ch;
-        }
-    }
+//     while ((ch = getc(stream)) != (int)'\n' && ch != EOF) {
+//         if (i < n - 1) {
+//             str[i++] = ch;
+//         }
+//     }
 
-    str[i] = '\0';
+//     str[i] = '\0';
 
-    if (cfg_logging) {
-        log = fopen(cfg_logfile,"a");
+//     if (cfg_logging) {
+//         log = fopen(cfg_logfile,"a");
 
-        if (log) {
-            fprintf(log,"< %s\n",str);
-            fclose(log);
-        }
-    }
+//         if (log) {
+//             fprintf(log,"< %s\n",str);
+//             fclose(log);
+//         }
+//     }
     
-    if (ch == EOF) {
-        myprintf("Nothing at other end - exiting\n");
-        free_hash();
-        exit(EXIT_FAILURE);
-    }
-}
+//     if (ch == EOF) {
+//         printf("Nothing at other end - exiting\n");
+//         free_hash();
+//         exit(EXIT_FAILURE);
+//     }
+// }
 
 int rtime( void )
 {
@@ -945,7 +946,7 @@ int rtime( void )
     things to do on start up of the program 
 */
 void start_up(void) {    
-    myprintf(PACKAGE " version " VERSION ", Copyright (C) 2000-2009 Gian-Carlo Pascutto\n");
+    printf(PACKAGE " version " VERSION ", Copyright (C) 2000-2009 Gian-Carlo Pascutto\n");
 }
 
 int verify_coord(state_t *s, char *input, move_s *move) {
@@ -976,67 +977,67 @@ int verify_coord(state_t *s, char *input, move_s *move) {
     return (legal);
 }
 
-int input_causes_stop(void) {
-    int c;
-    int elapsed;
-    int newtime;
+// int input_causes_stop(void) {
+//     int c;
+//     int elapsed;
+//     int newtime;
     
-    c = getc(stdin);
+//     c = getc(stdin);
 
-    if (c == 'p') {
-        /* ponderhit */
-        elapsed = rdifftime(rtime(), gamestate.start_time);
-        gamestate.time_for_move = allocate_time(&gamestate, FALSE);
-        ungetc(c,stdin);
+//     if (c == 'p') {
+//         /* ponderhit */
+//         elapsed = rdifftime(rtime(), gamestate.start_time);
+//         gamestate.time_for_move = allocate_time(&gamestate, FALSE);
+//         ungetc(c,stdin);
 
-        /* we need this out of our buffer ! */
-        rinput(&buffered_command[buffered_count][0], BIG_BUFF, stdin);
-        buffered_count++;
+//         /* we need this out of our buffer ! */
+//         rinput(&buffered_command[buffered_count][0], BIG_BUFF, stdin);
+//         buffered_count++;
 
-#if !defined COPYPROTECTION
-        if ((int)(((gamestate.time_for_move * 1.0 / 2.5) - elapsed) / 100) >= 0) {
-            myprintf("info string Time for move: %ds, elapsed: %ds, left: %ds, early break: %ds\n",
-                 gamestate.time_for_move / 100,elapsed / 100,
-                 (gamestate.time_for_move - elapsed) / 100,
-                 (int)(((gamestate.time_for_move * 1.0 / 2.5) - elapsed) / 100));
-        } else {
-            myprintf("info string Time for move: %ds, elapsed: %ds, left: %ds\n",
-                 gamestate.time_for_move / 100,elapsed / 100,(gamestate.time_for_move - elapsed) / 100);
+// #if !defined COPYPROTECTION
+//         if ((int)(((gamestate.time_for_move * 1.0 / 2.5) - elapsed) / 100) >= 0) {
+//             printf("info string Time for move: %ds, elapsed: %ds, left: %ds, early break: %ds\n",
+//                  gamestate.time_for_move / 100,elapsed / 100,
+//                  (gamestate.time_for_move - elapsed) / 100,
+//                  (int)(((gamestate.time_for_move * 1.0 / 2.5) - elapsed) / 100));
+//         } else {
+//             printf("info string Time for move: %ds, elapsed: %ds, left: %ds\n",
+//                  gamestate.time_for_move / 100,elapsed / 100,(gamestate.time_for_move - elapsed) / 100);
 
-        }
-#endif        
+//         }
+// #endif        
             
-        return 0;
-    } else {
-        ungetc(c,stdin);
+//         return 0;
+//     } else {
+//         ungetc(c,stdin);
 
-        if (uci_mode) {
-            /* attempt to read out */
-            rinput(&buffered_command[buffered_count][0],BIG_BUFF,stdin);
+//         if (uci_mode) {
+//             /* attempt to read out */
+//             rinput(&buffered_command[buffered_count][0],BIG_BUFF,stdin);
 
-            if (buffered_command[buffered_count][0] == '\0') {
-                return 0;
-            }
+//             if (buffered_command[buffered_count][0] == '\0') {
+//                 return 0;
+//             }
 
-            if (!strncmp(buffered_command[buffered_count],"time",4)) {
-                sscanf(buffered_command[buffered_count] + 5,"%d",&newtime);
-                gamestate.time_left = newtime;
-                return 0;
-            } else if (!strncmp(buffered_command[buffered_count],"otim",4)) {
-                buffered_count++;
-                return 0;
-            } else if (!strncmp(buffered_command[buffered_count],
-                       "setoption name MultiPV value", 22)) {
-                sscanf(buffered_command[buffered_count] + 23, "value %d", &uci_multipv);
-                return 0;
-            }
+//             if (!strncmp(buffered_command[buffered_count],"time",4)) {
+//                 sscanf(buffered_command[buffered_count] + 5,"%d",&newtime);
+//                 gamestate.time_left = newtime;
+//                 return 0;
+//             } else if (!strncmp(buffered_command[buffered_count],"otim",4)) {
+//                 buffered_count++;
+//                 return 0;
+//             } else if (!strncmp(buffered_command[buffered_count],
+//                        "setoption name MultiPV value", 22)) {
+//                 sscanf(buffered_command[buffered_count] + 23, "value %d", &uci_multipv);
+//                 return 0;
+//             }
 
-            buffered_count++;
-        }
-    }       
+//             buffered_count++;
+//         }
+//     }       
     
-    return 1;             
-}
+//     return 1;             
+// }
 
 int interrupt(void) {
     return 0;
@@ -1044,7 +1045,7 @@ int interrupt(void) {
 
 void reset_board(state_t *s) {
     // empty game        
-    memset(s->sboard, npiece, sizeof(s->sboard));
+    rmemset(s->sboard, npiece, sizeof(s->sboard));
 
     s->ep_square = 0;    
     s->Material = 0;    
@@ -1058,26 +1059,30 @@ void reset_board(state_t *s) {
 
 void make_text_moves(gamestate_t *g, state_t *s, char *movebuff) {
     char movestr[STR_BUFF];
-    int index = 0;
+    int index = 0, movesmade = 0;
     move_s xmove;
-    int movesmade = 0;    
 
-    while (*(movebuff + index) != '\0' && (index < (int)strlen(movebuff))) {
-        sscanf(movebuff + index,"%s",movestr);
-        index += (int)(strlen(movestr) + 1);
+    while (movebuff[index] != '\0') {
+        int i = 0;
+        while (movebuff[index] != ' ' && movebuff[index] != '\0') {
+            movestr[i++] = movebuff[index++];
+        }
+        movestr[i] = '\0';
+        if (movebuff[index] == ' ') index++;
+
         if (!verify_coord(s, movestr, &xmove)) {
-            myprintf("WARNING: no move match: -%s-\n",movestr);            
+            printf("WARNING: no move match: -%s-\n", movestr);
             return;
         }
 
         s->hash_history[g->move_number] = s->hash;
-        g->game_history[g->move_number] = xmove;        
+        g->game_history[g->move_number] = xmove;
 
         make(s, xmove);
         g->game_history_x[g->move_number++] = s->path_x[0];
         s->ply = 0;
-        movesmade++;        
-        g->root_to_move ^= 1;        
+        movesmade++;
+        g->root_to_move ^= 1;
     }
 }
 
