@@ -7,8 +7,9 @@
 
 */
 
-#include <math.h>
-#include <algorithm>
+// #include <math.h>
+// #include <algorithm>
+#include <zkvm.h>
 
 #include "sjeng.h"
 #include "extvars.h"
@@ -1045,7 +1046,7 @@ void feval(state_t *s, int phase_scale, t_eval_comps *ec) {
     attackinfo_t attack_info;    
     int score = 0;            
       
-    rmemset(&attack_info, 0, sizeof(attackinfo_t));  
+    memset(&attack_info, 0, sizeof(attackinfo_t));  
 
     /*
         mobility eval
@@ -1137,15 +1138,15 @@ int eval(state_t *s, const int alpha, const int beta, const int forcefull) {
     bmat = s->npieces[bbishop] * 4 + s->npieces[bknight] * 4 
            + s->npieces[brook] * 6 + s->npieces[bqueen] * 12;
             
-    wmat = std::min(40, wmat);
-    bmat = std::min(40, bmat);
+    wmat = MIN(40, wmat);
+    bmat = MIN(40, bmat);
     total_mat = wmat + bmat;
 
     phase_scale = (total_mat * 1024) / 80;         
 
     score = 0;
     
-    rmemset(&ec, 0, sizeof(t_eval_comps));
+    memset(&ec, 0, sizeof(t_eval_comps));
     feval(s, phase_scale, &ec);                
     
     score += !!s->white_to_move *  10;

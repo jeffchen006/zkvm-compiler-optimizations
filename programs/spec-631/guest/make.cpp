@@ -6,7 +6,8 @@
     Purpose: making and unmaking moves
 
 */
-#include <assert.h>
+// #include <assert.h>
+#include <zkvm.h>
 #include "sjeng.h"
 #include "bitboard.h"
 #include "extvars.h"

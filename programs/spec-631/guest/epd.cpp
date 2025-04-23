@@ -52,7 +52,7 @@ void setup_epd_line(gamestate_t *g, state_t *s, const char* inbuff) {
     init_game(g, s);
 
     /* but clear board */
-    rmemset(s->sboard, invalid, sizeof(s->sboard));
+    memset(s->sboard, invalid, sizeof(s->sboard));
 
     /* and assume no castling possible at all */
     s->castleflag = 0;
@@ -334,7 +334,7 @@ int check_solution(state_t *s, char *inbuff, move_s cmove) {
     return FALSE;
 }
 
-extern char *get_input();
+extern "C" char *get_input();
 
 void run_epd_testsuite(gamestate_t *g, state_t *s, const char *testname) {
     char readbuff[STR_BUFF];

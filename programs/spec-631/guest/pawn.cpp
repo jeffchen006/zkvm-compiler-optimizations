@@ -33,7 +33,7 @@ static pawntt_t PawnTT[MAX_CPU][1 << PAWN_HASH_LOG];
     reset pawn evaluation hash table
 */
 void clear_pawn_tt(void) {
-    rmemset(PawnTT, 0, sizeof(PawnTT));
+    memset(PawnTT, 0, sizeof(PawnTT));
 }
 
 /*
@@ -73,7 +73,7 @@ static void full_pawn_eval(state_t *s, pawntt_t *const pawntt) {
     /*
         initialize
     */
-    rmemset(pawntt, 0, sizeof(pawntt_t));
+    memset(pawntt, 0, sizeof(pawntt_t));
    
     /*
         File openness loop

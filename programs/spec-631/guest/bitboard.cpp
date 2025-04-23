@@ -7,10 +7,9 @@
  
 */
 
+#include <zkvm.h>
 #include "config.h"
 #include "sjeng.h"
-
-#include <algorithm>
 
 #include "extvars.h"
 #include "bitboard.h"
@@ -206,12 +205,12 @@ void SetupPrecalculatedData(void) {
             find starting square, then run over with fixed
             advance (length is known in advance)       
         */
-        diagstart = 7*(std::min(File(i), 7-Rank(i))) + i;
+        diagstart = 7*(MIN(File(i), 7-Rank(i))) + i;
         for (j = 0; j < DiagonalLength_a1h8[i]; j++) {
             DiagMaska1h8[i] |= Mask[diagstart - j*7];
         }        
         
-        diagstart = i - 9*(std::min(File(i), Rank(i)));
+        diagstart = i - 9*(MIN(File(i), Rank(i)));
         for (j = 0; j < DiagonalLength_a8h1[i]; j++) {
             DiagMaska8h1[i] |= Mask[diagstart + j*9];
         }        

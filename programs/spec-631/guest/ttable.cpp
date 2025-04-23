@@ -20,7 +20,7 @@ ttentry_t *TTable;
 unsigned int TTAge; 
 
 void clear_tt(void) {
-    rmemset(TTable, 0, sizeof(ttentry_t) * TTSize);    
+    memset(TTable, 0, sizeof(ttentry_t) * TTSize);    
 }
 
 void clear_dp_tt(void) {
@@ -259,7 +259,7 @@ void alloc_hash(void) {
     if (TTable == NULL) {
         printf("Out of memory allocating hashtables.\n");
 
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
 
     printf("Allocated %d hash entries, totalling %llu bytes.\n", TTSize,

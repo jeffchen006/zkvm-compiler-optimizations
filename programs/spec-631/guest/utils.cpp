@@ -410,7 +410,7 @@ void init_game(gamestate_t *g, state_t *s) {
         wrook, wknight, wbishop, wqueen, wking, wbishop, wknight, wrook,                         
     };
 
-    rmemcpy(s->sboard, init_board, sizeof(init_board));
+    memcpy(s->sboard, init_board, sizeof(init_board));
 
     s->white_to_move = 1;
     s->ep_square = 0;
@@ -616,7 +616,7 @@ void post_thinking(state_t *s, int score, move_s pv, char *searching_move, int m
         remake = 1;
     } 
 
-    rmemset(hashpv, 0, sizeof(hashpv));
+    memset(hashpv, 0, sizeof(hashpv));
     char movestr[STR_BUFF];
     if (!uci_mode) {
         comp_to_san(s, pv, movestr);
@@ -770,7 +770,7 @@ void post_multipv_thinking(state_t *s, int score, int mc, move_s move) {
         return;
     }    
     
-    rmemset(multipv_strings[mc], 0, STR_BUFF);
+    memset(multipv_strings[mc], 0, STR_BUFF);
 
     multipv_scores[mc] = score;
 
@@ -795,7 +795,7 @@ void post_multipv_thinking(state_t *s, int score, int mc, move_s move) {
     strcat(multipv_strings[mc], output);
     strcat(multipv_strings[mc], " ");
 
-    rmemset(hashpv, 0, sizeof(hashpv));
+    memset(hashpv, 0, sizeof(hashpv));
 
     hash_extract_pv(s, 60, hashpv);
 
@@ -822,7 +822,7 @@ void reset_piece_square(state_t *s) {
     int i;
 
     s->Material = 0;    
-    rmemset(s->npieces, 0, sizeof(s->npieces));
+    memset(s->npieces, 0, sizeof(s->npieces));
 
     for (i = 0; i < 64; i++) {
         if (s->sboard[i] && (s->sboard[i] < npiece)) {
@@ -906,7 +906,7 @@ void reset_piece_square(state_t *s) {
 //         }
 
 //         buffered_count--;
-//         rmemset(buffered_command[buffered_count], 0, sizeof(buffered_command[buffered_count]));
+//         memset(buffered_command[buffered_count], 0, sizeof(buffered_command[buffered_count]));
 
 //         return;
 //     }
@@ -1045,7 +1045,7 @@ int interrupt(void) {
 
 void reset_board(state_t *s) {
     // empty game        
-    rmemset(s->sboard, npiece, sizeof(s->sboard));
+    memset(s->sboard, npiece, sizeof(s->sboard));
 
     s->ep_square = 0;    
     s->Material = 0;    

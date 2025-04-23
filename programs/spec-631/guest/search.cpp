@@ -10,9 +10,10 @@
 #include "config.h"
 #include "sjeng.h"
 
-#include <limits.h>
-#include <math.h>
-#include <algorithm>
+// #include <limits.h>
+// #include <math.h>
+// #include <algorithm>
+#include <zkvm.h>
 
 #include "extvars.h"
 #include "evpar.h"
@@ -328,7 +329,7 @@ static int search_time_check(state_t *s) {
             if (g->failed == 1
                 && (g->extendedtime != 2)
                 && !g->fixed_time
-                && (g->time_left > std::max(g->time_for_move * 7, 1000))) {
+                && (g->time_left > MAX(g->time_for_move * 7, 1000))) {
                 oldtime = g->time_for_move;
                 if (!g->extendedtime) {
                     g->time_for_move += allocate_time(g, TRUE);
@@ -338,18 +339,18 @@ static int search_time_check(state_t *s) {
                 g->time_for_move += allocate_time(g, TRUE);
                 g->time_for_move += allocate_time(g, TRUE);
                 g->time_for_move += allocate_time(g, TRUE);
-                g->time_for_move = std::min(g->time_for_move, g->time_left - 50);
+                g->time_for_move = MIN(g->time_for_move, g->time_left - 50);
 
                 g->extendedtime = 2;
             } else if (g->failedhigh == 1
                        && !g->extendedtime
                        && !g->fixed_time
-                       && (g->time_left > std::max(g->time_for_move * 6, 1000))) {
+                       && (g->time_left > MAX(g->time_for_move * 6, 1000))) {
                 g->extendedtime = 1;
                 oldtime = g->time_for_move;
                 g->time_for_move += allocate_time(g, TRUE);
                 g->time_for_move += allocate_time(g, TRUE);
-                g->time_for_move = std::min(g->time_for_move, g->time_left - 50);
+                g->time_for_move = MIN(g->time_for_move, g->time_left - 50);
             } else {
                 g->time_exit = TRUE;
                 return 1;
@@ -1606,9 +1607,9 @@ void reset_search_counters(state_t *s) {
 
 void reset_search_data(state_t *s) {
     /* clear the history heuristic: */
-    rmemset(history_h, 0, sizeof(history_h));
-    rmemset(history_hit, 0, sizeof(history_hit));
-    rmemset(history_tot, 0, sizeof(history_tot));
+    memset(history_h, 0, sizeof(history_h));
+    memset(history_hit, 0, sizeof(history_hit));
+    memset(history_tot, 0, sizeof(history_tot));
 
     /* clear the killer moves: */
     for (int i = 0; i < PV_BUFF; i++) {
@@ -1622,7 +1623,7 @@ void reset_search_data(state_t *s) {
     gamestate.pv_best = 0;
 
     if (uci_limitstrength) {
-        gamestate.maxdepth = std::min(gamestate.maxdepth, elo_to_depth(uci_elo));
+        gamestate.maxdepth = MIN(gamestate.maxdepth, elo_to_depth(uci_elo));
     }
 }
 
@@ -1740,7 +1741,7 @@ move_s think(gamestate_t *g, state_t *s) {
     gamestate.i_depth = 1;
 
     for (;
-         gamestate.i_depth <= std::min(40, gamestate.maxdepth);
+         gamestate.i_depth <= MIN(40, gamestate.maxdepth);
          gamestate.i_depth++) {
 
         if (uci_mode) {
