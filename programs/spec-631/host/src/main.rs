@@ -18,14 +18,6 @@ extern "C" {
     fn cmain() -> ();
 }
 
-static INPUT: &str = include_str!("ref.txt");
-
-#[no_mangle]
-pub unsafe fn get_input() -> *const u8 {
-    let cstr = CString::new(INPUT).unwrap();
-    cstr.into_raw() as *const u8
-}
-
 fn main() {
     unsafe {
         cmain();

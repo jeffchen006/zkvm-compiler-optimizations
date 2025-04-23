@@ -334,15 +334,13 @@ int check_solution(state_t *s, char *inbuff, move_s cmove) {
     return FALSE;
 }
 
-extern "C" char *get_input();
-
 void run_epd_testsuite(gamestate_t *g, state_t *s, const char *testname) {
     char readbuff[STR_BUFF];
     int thinkdepth;
     move_s comp_move;
     int tested = 0;
 
-    const char *input = get_input();
+    const char *input = read_string();
     const char *current = input;
 
     while (*current != '\0') {
