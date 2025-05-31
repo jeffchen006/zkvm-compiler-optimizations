@@ -3,14 +3,24 @@ name = "spec-631"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "spec-631"
+path = "src/main.rs"
+
+[lib]
+name = "spec631"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
-risc0-zkvm = { version = "=1.2.3", default-features = false, features = ["std"] }
-sp1-zkvm = "=4.1.1"
-c-platform = { path = "../../c-platform" }
+sp1-zkvm = { version = "=4.1.1", optional = true }
+risc0-zkvm = { version = "1.2.3", default-features = false, features = ["std"], optional = true }
+c-platform = { path = "../../c-platform", optional = true}
 
 [build-dependencies]
 c-build = { path = "../../c-build" }
 
 [features]
-risc0 = ["c-platform/risc0"]
-sp1 = ["c-platform/sp1"]
+risc0 = ["c-platform/risc0", "dep:risc0-zkvm", "dep:c-platform"]
+sp1 = ["c-platform/sp1", "dep:sp1-zkvm", "dep:c-platform"]
+x86 = ["c-build/x86"]
