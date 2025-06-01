@@ -101,5 +101,6 @@ extern "C" void cmain() {
     // }
 
     // return EXIT_SUCCESS;
+    free_hash();
 }
 
