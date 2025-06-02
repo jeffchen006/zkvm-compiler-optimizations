@@ -2,12 +2,6 @@
 
 use std::ffi::CString;
 
-#[cfg(feature = "risc0")]
-risc0_zkvm::guest::entry!(main);
-
-#[cfg(feature = "sp1")]
-sp1_zkvm::entrypoint!(main);
-
 #[link(name = "spec-631", kind = "static")]
 extern "C" {
     fn cmain() -> ();
