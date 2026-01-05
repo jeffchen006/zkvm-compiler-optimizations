@@ -6,6 +6,7 @@ pub fn setup_build(program: &str) {
     println!("cargo:rerun-if-env-changed=CARGO_ZK_PASSES");
     println!("cargo:rerun-if-env-changed=CARGO_ZK_CFLAGS");
     println!("cargo:rerun-if-env-changed=CARGO_ZK_LOWER_ATOMIC_BEFORE");
+    println!("cargo:rerun-if-env-changed=CARGO_ZK_LOWER_ATOMIC_PASS");
     println!("cargo:rerun-if-env-changed=RUSTFLAGS");
 
     let current_id = env::var("THREAD_ID").unwrap_or("".to_string());
@@ -15,19 +16,20 @@ pub fn setup_build(program: &str) {
     let passes = env::var("CARGO_ZK_PASSES").unwrap_or("".to_string());
     let lower_atomic_before_str = env::var("CARGO_ZK_LOWER_ATOMIC_BEFORE").unwrap_or("".to_string());
     let lower_atomic_before = lower_atomic_before_str == "True";
+    let lower_atomic_pass = env::var("CARGO_ZK_LOWER_ATOMIC_PASS").unwrap_or("lower-atomic".to_string());
 
     let cflags = env::var("CARGO_ZK_CFLAGS").unwrap_or("".to_string());
     let cllvm_flags = env::var("CARGO_ZK_LLVMFLAGS").unwrap_or("".to_string());
 
-    let mut passes_string = String::from("PASSES=lower-atomic");
+    let mut passes_string = format!("PASSES={}", lower_atomic_pass);
     if !passes.is_empty() {
         if lower_atomic_before {
-            passes_string = format!("PASSES={},{}", "lower-atomic", &passes);
+            passes_string = format!("PASSES={},{}", lower_atomic_pass, &passes);
         } else {
-            passes_string = format!("PASSES={},{}", &passes, "lower-atomic");
+            passes_string = format!("PASSES={},{}", &passes, lower_atomic_pass);
         }
     } else if !cflags.is_empty() {
-        passes_string = String::from("PASSES=default<O3>,lower-atomic");
+        passes_string = format!("PASSES=default<O3>,{}", lower_atomic_pass);
     }
 
     println!("cargo::warning=Cleaning and building C with passes: {}", passes_string);

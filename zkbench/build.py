@@ -1,8 +1,11 @@
 import asyncio
 import logging
 import os
+import re
 import shutil
+import subprocess
 import threading
+from functools import lru_cache
 
 from zkbench.clean import run_clean
 from zkbench.common import get_run_config, run_command
@@ -13,6 +16,54 @@ from zkbench.config import (
     get_program_path,
     get_target_binary_path,
 )
+
+X86_TOOLCHAIN = "nightly-2025-01-30-x86_64-unknown-linux-gnu"
+
+
+@lru_cache(maxsize=None)
+def _get_rust_toolchain_llvm_major_version(toolchain: str) -> int | None:
+    toolchain = toolchain.removeprefix("+")
+    try:
+        out = subprocess.check_output(
+            ["rustc", f"+{toolchain}", "--version", "--verbose"],
+            text=True,
+            stderr=subprocess.STDOUT,
+        )
+    except Exception as e:
+        logging.debug(f"Failed to query rustc LLVM version for +{toolchain}: {e}")
+        return None
+
+    m = re.search(r"^LLVM version: (\d+)\.", out, flags=re.MULTILINE)
+    if not m:
+        return None
+    return int(m.group(1))
+
+
+def _get_rust_toolchain_for_zkvm(zkvm: str) -> str:
+    if zkvm == "sp1":
+        return "succinct"
+    if zkvm == "risc0":
+        return "risc0"
+    if zkvm == "x86":
+        return X86_TOOLCHAIN
+    raise ValueError(f"Unknown zkvm: {zkvm}")
+
+
+def _get_lower_atomic_pass_name(zkvm: str) -> str:
+    override = os.environ.get("ZK_LOWER_ATOMIC_PASS")
+    if override:
+        return override
+
+    toolchain = _get_rust_toolchain_for_zkvm(zkvm)
+    llvm_major = _get_rust_toolchain_llvm_major_version(toolchain)
+    if llvm_major is not None and llvm_major < 19:
+        return "loweratomic"
+    return "lower-atomic"
+
+
+def _normalize_passes(passes: list[str], lower_atomic_pass: str) -> list[str]:
+    other = "lower-atomic" if lower_atomic_pass == "loweratomic" else "loweratomic"
+    return [p.replace(other, lower_atomic_pass) for p in passes]
 
 
 async def run_build(
@@ -155,13 +206,16 @@ def get_build_command(
     cmd: str,
     subtractive: bool = False,
 ):
-    passes = ",".join(profile.passes)
+    lower_atomic_pass_name = _get_lower_atomic_pass_name(zkvm)
+    normalized_passes = _normalize_passes(profile.passes, lower_atomic_pass_name)
+    passes = ",".join(normalized_passes)
     env = {
         **os.environ,
         "CARGO_ZK_PASSES": passes if not subtractive else "",
         "CARGO_ZK_CFLAGS": profile.cflags if not subtractive else profile.csubtractive,
         "CARGO_ZK_LLVMFLAGS": "" if not subtractive else profile.csubtractivellvm,
         "CARGO_ZK_LOWER_ATOMIC_BEFORE": str(profile.lower_atomic_before),
+        "CARGO_ZK_LOWER_ATOMIC_PASS": lower_atomic_pass_name,
         "THREAD_ID": str(threading.get_ident()),
     }
     if target_dir is not None:
@@ -172,11 +226,11 @@ def get_build_command(
         "" if features is None else " ".join([f"--features {f}" for f in features])
     )
 
-    lower_atomic_pass = ["lower-atomic"]
+    lower_atomic_pass = [lower_atomic_pass_name]
     passes_string = ",".join(
-        (profile.passes + lower_atomic_pass)
+        (normalized_passes + lower_atomic_pass)
         if not profile.lower_atomic_before
-        else (lower_atomic_pass + profile.passes)
+        else (lower_atomic_pass + normalized_passes)
     )
     pass_string = "" if passes_string == "" else f"-C passes={passes_string}"
     if subtractive:
@@ -193,7 +247,8 @@ def get_build_command(
         return (
             f"""
             CC=gcc CC_riscv32im_succinct_zkvm_elf=~/.sp1/bin/riscv32-unknown-elf-gcc \
-                RUSTFLAGS="{prepopulate_passes} {pass_string} -C link-arg=-Ttext=0x00200800 -C panic=abort {rflags} {llvm_flag}" \
+                RUSTFLAGS="{prepopulate_passes} {pass_string} -C link-arg=-Ttext=0x00200800 
+                -C panic=abort {rflags} {llvm_flag}" \
                 RUSTUP_TOOLCHAIN=succinct \
                 CARGO_BUILD_TARGET=riscv32im-succinct-zkvm-elf \
                 cargo +succinct {cmd} --release --locked --features sp1 {verbosity} {additional_features}
